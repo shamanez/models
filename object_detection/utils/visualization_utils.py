@@ -341,9 +341,9 @@ def visualize_boxes_and_labels_on_image_array(image,
 
   Args:
     image: uint8 numpy array with shape (img_height, img_width, 3)
-    boxes: a numpy array of shape [N, 4]
-    classes: a numpy array of shape [N]
-    scores: a numpy array of shape [N] or None.  If scores=None, then
+    boxes: a numpy array of shape [N, 4]                                 #number of boxes detected , N is 100 It's the maximum
+    classes: a numpy array of shape [N]                          #classes of each box detected  , This is also 100 
+    scores: a numpy array of shape [N] or None.  If scores=None, then    #Class scores of the each box detected , this is also 100
       this function assumes that the boxes to be plotted are groundtruth
       boxes and plot all boxes as black with no classes or scores.
     category_index: a dict containing category dictionaries (each holding
@@ -364,12 +364,16 @@ def visualize_boxes_and_labels_on_image_array(image,
   """
   # Create a display string (and color) for every box location, group any boxes
   # that correspond to the same location.
+ 
+#this won't do any NMS , this will draw only the boxes higher than the score tresh hold 
+
   box_to_display_str_map = collections.defaultdict(list)
   box_to_color_map = collections.defaultdict(str)
   box_to_instance_masks_map = {}
   box_to_keypoints_map = collections.defaultdict(list)
   if not max_boxes_to_draw:
     max_boxes_to_draw = boxes.shape[0]
+ 
   for i in range(min(max_boxes_to_draw, boxes.shape[0])):
     if scores is None or scores[i] > min_score_thresh:
       box = tuple(boxes[i].tolist())
@@ -383,11 +387,12 @@ def visualize_boxes_and_labels_on_image_array(image,
         if not agnostic_mode:
           if classes[i] in category_index.keys():
             class_name = category_index[classes[i]]['name']
+      
           else:
             class_name = 'N/A'
           display_str = '{}: {}%'.format(
               class_name,
-              int(100*scores[i]))
+              int(100*scores[i])) #get the scores for relevent class 
         else:
           display_str = 'score: {}%'.format(int(100 * scores[i]))
         box_to_display_str_map[box].append(display_str)
